@@ -2,10 +2,10 @@ package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.request.PutItemRequest
 import com.johnturkson.awstools.signer.AWSRequestSigner
+import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.requests.CreateConnectionRequest
 import com.johnturkson.messaging.server.requests.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.CreateConnectionResponse
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -22,13 +22,13 @@ object CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionReques
         request: CreateConnectionRequest,
         context: WebsocketRequestContext,
     ): CreateConnectionResponse {
-        return createConnection(context.connectionId)
+        return createConnection(Connection(context.connectionId))
     }
     
-    private fun createConnection(id: String): CreateConnectionResponse {
+    private fun createConnection(connection: Connection): CreateConnectionResponse {
         val table = "connections"
         
-        val request = PutItemRequest(table, id)
+        val request = PutItemRequest(table, connection)
         
         val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
         val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
@@ -37,7 +37,7 @@ object CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionReques
         val method = "POST"
         val url = "https://dynamodb.us-west-2.amazonaws.com"
         
-        val body = configuration.encodeToString(PutItemRequest.serializer(String.serializer()), request)
+        val body = configuration.encodeToString(PutItemRequest.serializer(Connection.serializer()), request)
         
         val headers = listOf(AWSRequestSigner.Header("X-Amz-Target", "DynamoDB_20120810.PutItem"))
         

@@ -4,6 +4,7 @@ import com.johnturkson.awstools.dynamodb.request.ScanRequest
 import com.johnturkson.awstools.dynamodb.request.ScanResponse
 import com.johnturkson.awstools.signer.AWSRequestSigner.Header
 import com.johnturkson.awstools.signer.AWSRequestSigner.generateRequestHeaders
+import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.requests.GetConnectionsRequest
 import com.johnturkson.messaging.server.requests.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.GetConnectionsResponse
@@ -65,7 +66,7 @@ object GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, G
         
         val response = client.newCall(call).execute().use { response ->
             val responseBody = response.body?.string() ?: throw Exception("Missing Scan response body")
-            configuration.decodeFromString(ScanResponse.serializer(String.serializer()), responseBody)
+            configuration.decodeFromString(ScanResponse.serializer(Connection.serializer()), responseBody)
         }
         
         return GetConnectionsResponse(response.items)

@@ -3,6 +3,7 @@ package com.johnturkson.messaging.server.functions
 import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.request.DeleteItemRequest
 import com.johnturkson.awstools.signer.AWSRequestSigner
+import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.requests.DeleteConnectionRequest
 import com.johnturkson.messaging.server.requests.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.DeleteConnectionResponse
@@ -23,14 +24,14 @@ object DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionReques
         request: DeleteConnectionRequest,
         context: WebsocketRequestContext,
     ): DeleteConnectionResponse {
-        return deleteConnection(request.id)
+        return deleteConnection(Connection(context.connectionId))
     }
     
-    private fun deleteConnection(id: String): DeleteConnectionResponse {
+    private fun deleteConnection(connection: Connection): DeleteConnectionResponse {
         val table = "connections"
         
         val request = DeleteItemRequest<String>(table, buildDynamoDBObject {
-            put("id", id)
+            put("id", connection.id)
         })
         
         val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")

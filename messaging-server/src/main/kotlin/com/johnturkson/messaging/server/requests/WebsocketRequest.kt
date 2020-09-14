@@ -6,5 +6,4 @@ import kotlinx.serialization.Serializable
 data class WebsocketRequest(
     val requestContext: WebsocketRequestContext,
     val body: String,
-    val isBase64Encoded: Boolean,
 )
