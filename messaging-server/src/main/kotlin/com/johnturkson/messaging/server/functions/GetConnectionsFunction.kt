@@ -5,6 +5,7 @@ import com.johnturkson.awstools.dynamodb.request.ScanResponse
 import com.johnturkson.awstools.signer.AWSRequestSigner.Header
 import com.johnturkson.awstools.signer.AWSRequestSigner.generateRequestHeaders
 import com.johnturkson.messaging.server.requests.GetConnectionsRequest
+import com.johnturkson.messaging.server.requests.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.GetConnectionsResponse
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -14,12 +15,15 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
-object GetConnectionsFunction : LambdaFunctionHandler<GetConnectionsRequest, GetConnectionsResponse> {
+object GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, GetConnectionsResponse> {
     override val configuration = Json
     override val inputSerializer = GetConnectionsRequest.serializer()
     override val outputSerializer = GetConnectionsResponse.serializer()
     
-    override fun processRequest(request: GetConnectionsRequest): GetConnectionsResponse {
+    override fun processRequest(
+        request: GetConnectionsRequest,
+        context: WebsocketRequestContext,
+    ): GetConnectionsResponse {
         return getConnections()
     }
     

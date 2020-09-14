@@ -6,6 +6,7 @@ import com.johnturkson.awstools.signer.AWSRequestSigner.generateRequestHeaders
 import com.johnturkson.messaging.server.data.Message
 import com.johnturkson.messaging.server.data.MessageData
 import com.johnturkson.messaging.server.requests.CreateMessageRequest
+import com.johnturkson.messaging.server.requests.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.CreateMessageResponse
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -16,20 +17,22 @@ import java.net.URL
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-object CreateMessageFunction : LambdaFunctionHandler<CreateMessageRequest, CreateMessageResponse> {
+object CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, CreateMessageResponse> {
     override val configuration = Json
     override val inputSerializer = CreateMessageRequest.serializer()
     override val outputSerializer = CreateMessageResponse.serializer()
     
-    override fun processRequest(request: CreateMessageRequest): CreateMessageResponse {
+    override fun processRequest(
+        request: CreateMessageRequest,
+        context: WebsocketRequestContext,
+    ): CreateMessageResponse {
         return createMessage(request.data)
+        // TODO notify all users about new message
     }
     
     private fun generateMessageId(length: Int = 16): String {
         var id = ""
-        repeat(length) {
-            id += Random.nextInt(0..0xf).toString(0x10)
-        }
+        repeat(length) { id += Random.nextInt(0..0xf).toString(0x10) }
         return id
     }
     
