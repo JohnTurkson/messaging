@@ -28,7 +28,7 @@ object GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, G
         return getConnections()
     }
     
-    private fun getConnections(): GetConnectionsResponse {
+    fun getConnections(): GetConnectionsResponse {
         val table = "connections"
         
         val request = ScanRequest<String>(table)

@@ -4,4 +4,4 @@ import com.johnturkson.messaging.server.data.Connection
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class GetConnectionsResponse(val connections: List<Connection>)
+data class GetConnectionsResponse(val data: List<Connection>)
