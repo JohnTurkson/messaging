@@ -6,8 +6,9 @@ import com.johnturkson.awstools.signer.AWSRequestSigner.generateRequestHeaders
 import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.data.Message
 import com.johnturkson.messaging.server.data.MessageData
+import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.requests.CreateMessageRequest
-import com.johnturkson.messaging.server.requests.WebsocketRequestContext
+import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.CreateMessageResponse
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -46,8 +47,8 @@ object CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Cre
         val message = Message(id, data.contents)
         val request = PutItemRequest(table, message)
         
-        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
-        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        val accessKeyId = System.getenv("ACCESS_KEY")
+        val secretKey = System.getenv("SECRET_KEY")
         val region = "us-west-2"
         val service = "dynamodb"
         val method = "POST"
@@ -86,8 +87,8 @@ object CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Cre
     fun broadcastMessage(message: Message, recipients: List<Connection>) {
         recipients.forEach { recipient ->
             val id = recipient.id.replace("=", "%3D")
-            val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
-            val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+            val accessKeyId = System.getenv("ACCESS_KEY")
+            val secretKey = System.getenv("SECRET_KEY")
             val region = "us-west-2"
             val service = "execute-api"
             val method = "POST"

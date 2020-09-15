@@ -1,10 +1,15 @@
-package com.johnturkson.messaging.server.functions
+package com.johnturkson.messaging.server.lambda
 
-import com.johnturkson.messaging.server.requests.WebsocketRequest
-import com.johnturkson.messaging.server.requests.WebsocketRequestContext
+import com.amazonaws.services.lambda.runtime.Context
 import kotlinx.serialization.json.Json
+import java.io.InputStream
+import java.io.OutputStream
 
-interface WebsocketLambdaFunction<T, R> : LambdaFunction<T, R> {
+interface WebsocketLambdaFunction<T, R> : AbstractLambdaFunction<T, R> {
+    override fun handleRequest(input: InputStream, output: OutputStream, context: Context) {
+        LambdaFunctionRequestHandler.handleRequest(input, output, context) { request -> processInput(request) }
+    }
+    
     override fun processInput(input: String): String {
         val (request, context) = decodeInput(input)
         val response = processRequest(request, context)

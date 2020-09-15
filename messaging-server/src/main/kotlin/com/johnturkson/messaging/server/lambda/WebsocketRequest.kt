@@ -1,4 +1,4 @@
-package com.johnturkson.messaging.server.requests
+package com.johnturkson.messaging.server.lambda
 
 import kotlinx.serialization.Serializable
 

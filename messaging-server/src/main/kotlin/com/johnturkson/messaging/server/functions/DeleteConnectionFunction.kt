@@ -4,8 +4,9 @@ import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.request.DeleteItemRequest
 import com.johnturkson.awstools.signer.AWSRequestSigner
 import com.johnturkson.messaging.server.data.Connection
+import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.requests.DeleteConnectionRequest
-import com.johnturkson.messaging.server.requests.WebsocketRequestContext
+import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.DeleteConnectionResponse
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -34,8 +35,8 @@ object DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionReques
             put("id", connection.id)
         })
         
-        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
-        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        val accessKeyId = System.getenv("ACCESS_KEY")
+        val secretKey = System.getenv("SECRET_KEY")
         val region = "us-west-2"
         val service = "dynamodb"
         val method = "POST"

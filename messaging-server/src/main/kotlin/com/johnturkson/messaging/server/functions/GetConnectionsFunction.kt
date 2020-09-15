@@ -5,8 +5,9 @@ import com.johnturkson.awstools.dynamodb.request.ScanResponse
 import com.johnturkson.awstools.signer.AWSRequestSigner.Header
 import com.johnturkson.awstools.signer.AWSRequestSigner.generateRequestHeaders
 import com.johnturkson.messaging.server.data.Connection
+import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
+import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
 import com.johnturkson.messaging.server.requests.GetConnectionsRequest
-import com.johnturkson.messaging.server.requests.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.GetConnectionsResponse
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -33,8 +34,8 @@ object GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, G
         
         val request = ScanRequest<String>(table)
         
-        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
-        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        val accessKeyId = System.getenv("ACCESS_KEY")
+        val secretKey = System.getenv("SECRET_KEY")
         val region = "us-west-2"
         val service = "dynamodb"
         val method = "POST"

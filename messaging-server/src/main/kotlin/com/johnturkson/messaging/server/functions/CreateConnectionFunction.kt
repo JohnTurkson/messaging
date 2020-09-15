@@ -3,8 +3,9 @@ package com.johnturkson.messaging.server.functions
 import com.johnturkson.awstools.dynamodb.request.PutItemRequest
 import com.johnturkson.awstools.signer.AWSRequestSigner
 import com.johnturkson.messaging.server.data.Connection
+import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
+import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
 import com.johnturkson.messaging.server.requests.CreateConnectionRequest
-import com.johnturkson.messaging.server.requests.WebsocketRequestContext
 import com.johnturkson.messaging.server.responses.CreateConnectionResponse
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -13,8 +14,8 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
-object CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest, CreateConnectionResponse> {
-    override val configuration = Json
+class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest, CreateConnectionResponse> {
+    override val configuration = Json { ignoreUnknownKeys = true }
     override val inputSerializer = CreateConnectionRequest.serializer()
     override val outputSerializer = CreateConnectionResponse.serializer()
     
@@ -25,13 +26,14 @@ object CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionReques
         return createConnection(Connection(context.connectionId))
     }
     
-    private fun createConnection(connection: Connection): CreateConnectionResponse {
+    fun createConnection(connection: Connection): CreateConnectionResponse {
         val table = "connections"
         
         val request = PutItemRequest(table, connection)
         
-        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
-        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        val accessKeyId = System.getenv("ACCESS_KEY")
+        val secretKey = System.getenv("SECRET_KEY")
+        
         val region = "us-west-2"
         val service = "dynamodb"
         val method = "POST"
