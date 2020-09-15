@@ -13,3 +13,7 @@ dependencies {
     implementation("com.johnturkson.aws-tools:aws-dynamodb-transforming-serializer:0.0.5")
     implementation("com.johnturkson.aws-tools:aws-request-signer:0.0.5")
 }
+
+tasks.named<Jar>("jar") {
+    configurations.runtimeClasspath.get().forEach { file -> from(zipTree(file.absoluteFile)) }
+}
