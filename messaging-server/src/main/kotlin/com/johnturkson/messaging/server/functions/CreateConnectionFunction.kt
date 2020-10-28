@@ -31,8 +31,9 @@ class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest
         
         val request = PutItemRequest(table, connection)
         
-        val accessKeyId = System.getenv("ACCESS_KEY")
-        val secretKey = System.getenv("SECRET_KEY")
+        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
+        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        val sessionToken = System.getenv("AWS_SESSION_TOKEN")
         
         val region = "us-west-2"
         val service = "dynamodb"
@@ -41,7 +42,10 @@ class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest
         
         val body = configuration.encodeToString(PutItemRequest.serializer(Connection.serializer()), request)
         
-        val headers = listOf(AWSRequestSigner.Header("X-Amz-Target", "DynamoDB_20120810.PutItem"))
+        val headers = listOf(
+            AWSRequestSigner.Header("X-Amz-Security-Token", sessionToken),
+            AWSRequestSigner.Header("X-Amz-Target", "DynamoDB_20120810.PutItem"),
+        )
         
         val signedHeaders = AWSRequestSigner.generateRequestHeaders(
             accessKeyId,
