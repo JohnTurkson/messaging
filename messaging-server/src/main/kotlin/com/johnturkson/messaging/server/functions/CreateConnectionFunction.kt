@@ -23,7 +23,7 @@ class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest
         request: CreateConnectionRequest,
         context: WebsocketRequestContext,
     ): CreateConnectionResponse {
-        return createConnection(Connection(context.connectionId))
+        return createConnection(Connection(context.connectionId, request.data))
     }
     
     fun createConnection(connection: Connection): CreateConnectionResponse {

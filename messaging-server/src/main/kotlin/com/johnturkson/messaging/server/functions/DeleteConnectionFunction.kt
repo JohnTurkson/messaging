@@ -25,7 +25,7 @@ object DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionReques
         request: DeleteConnectionRequest,
         context: WebsocketRequestContext,
     ): DeleteConnectionResponse {
-        return deleteConnection(Connection(context.connectionId))
+        return deleteConnection(Connection(context.connectionId, request.data))
     }
     
     private fun deleteConnection(connection: Connection): DeleteConnectionResponse {
