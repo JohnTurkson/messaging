@@ -9,6 +9,7 @@ import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
 import com.johnturkson.messaging.server.requests.GetConnectionsRequest
 import com.johnturkson.messaging.server.responses.GetConnectionsResponse
+import com.johnturkson.messaging.server.responses.Response
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -17,10 +18,13 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
-object GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, GetConnectionsResponse> {
-    override val configuration = Json
+class GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, GetConnectionsResponse> {
+    override val configuration = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
     override val inputSerializer = GetConnectionsRequest.serializer()
-    override val outputSerializer = GetConnectionsResponse.serializer()
+    override val outputSerializer = Response.serializer()
     
     override fun processRequest(
         request: GetConnectionsRequest,
@@ -34,8 +38,10 @@ object GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, G
         
         val request = ScanRequest<String>(table)
         
-        val accessKeyId = System.getenv("ACCESS_KEY")
-        val secretKey = System.getenv("SECRET_KEY")
+        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
+        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        val sessionToken = System.getenv("AWS_SESSION_TOKEN")
+        
         val region = "us-west-2"
         val service = "dynamodb"
         val method = "POST"
@@ -43,7 +49,10 @@ object GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, G
         
         val body = configuration.encodeToString(ScanRequest.serializer(String.serializer()), request)
         
-        val headers = listOf(Header("X-Amz-Target", "DynamoDB_20120810.Scan"))
+        val headers = listOf(
+            Header("X-Amz-Security-Token", sessionToken),
+            Header("X-Amz-Target", "DynamoDB_20120810.Scan"),
+        )
         
         val signedHeaders = generateRequestHeaders(
             accessKeyId,

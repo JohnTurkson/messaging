@@ -3,11 +3,13 @@ package com.johnturkson.messaging.server.functions
 import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.request.DeleteItemRequest
 import com.johnturkson.awstools.signer.AWSRequestSigner
+import com.johnturkson.awstools.signer.AWSRequestSigner.Header
 import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
-import com.johnturkson.messaging.server.requests.DeleteConnectionRequest
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
+import com.johnturkson.messaging.server.requests.DeleteConnectionRequest
 import com.johnturkson.messaging.server.responses.DeleteConnectionResponse
+import com.johnturkson.messaging.server.responses.Response
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -16,10 +18,13 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
-object DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionRequest, DeleteConnectionResponse> {
-    override val configuration = Json
+class DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionRequest, DeleteConnectionResponse> {
+    override val configuration = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
     override val inputSerializer = DeleteConnectionRequest.serializer()
-    override val outputSerializer = DeleteConnectionResponse.serializer()
+    override val outputSerializer = Response.serializer()
     
     override fun processRequest(
         request: DeleteConnectionRequest,
@@ -35,8 +40,10 @@ object DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionReques
             put("id", connection.id)
         })
         
-        val accessKeyId = System.getenv("ACCESS_KEY")
-        val secretKey = System.getenv("SECRET_KEY")
+        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
+        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        val sessionToken = System.getenv("AWS_SESSION_TOKEN")
+        
         val region = "us-west-2"
         val service = "dynamodb"
         val method = "POST"
@@ -44,7 +51,10 @@ object DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionReques
         
         val body = configuration.encodeToString(DeleteItemRequest.serializer(String.serializer()), request)
         
-        val headers = listOf(AWSRequestSigner.Header("X-Amz-Target", "DynamoDB_20120810.DeleteItem"))
+        val headers = listOf(
+            Header("X-Amz-Security-Token", sessionToken),
+            Header("X-Amz-Target", "DynamoDB_20120810.DeleteItem"),
+        )
         
         val signedHeaders = AWSRequestSigner.generateRequestHeaders(
             accessKeyId,

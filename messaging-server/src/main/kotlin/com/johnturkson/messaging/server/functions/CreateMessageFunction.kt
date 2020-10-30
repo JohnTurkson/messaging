@@ -7,9 +7,10 @@ import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.data.Message
 import com.johnturkson.messaging.server.data.MessageData
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
-import com.johnturkson.messaging.server.requests.CreateMessageRequest
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
+import com.johnturkson.messaging.server.requests.CreateMessageRequest
 import com.johnturkson.messaging.server.responses.CreateMessageResponse
+import com.johnturkson.messaging.server.responses.Response
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -19,17 +20,20 @@ import java.net.URL
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-object CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, CreateMessageResponse> {
-    override val configuration = Json
+class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, CreateMessageResponse> {
+    override val configuration = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
     override val inputSerializer = CreateMessageRequest.serializer()
-    override val outputSerializer = CreateMessageResponse.serializer()
+    override val outputSerializer = Response.serializer()
     
     override fun processRequest(
         request: CreateMessageRequest,
         context: WebsocketRequestContext,
     ): CreateMessageResponse {
         val response = createMessage(request.data)
-        val recipients = GetConnectionsFunction.getConnections()
+        val recipients = GetConnectionsFunction().getConnections()
         broadcastMessage(response.data, recipients.data)
         return response
     }
@@ -47,8 +51,10 @@ object CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Cre
         val message = Message(id, data.contents)
         val request = PutItemRequest(table, message)
         
-        val accessKeyId = System.getenv("ACCESS_KEY")
-        val secretKey = System.getenv("SECRET_KEY")
+        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
+        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+        val sessionToken = System.getenv("AWS_SESSION_TOKEN")
+        
         val region = "us-west-2"
         val service = "dynamodb"
         val method = "POST"
@@ -56,7 +62,10 @@ object CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Cre
         
         val body = configuration.encodeToString(PutItemRequest.serializer(Message.serializer()), request)
         
-        val headers = listOf(Header("X-Amz-Target", "DynamoDB_20120810.PutItem"))
+        val headers = listOf(
+            Header("X-Amz-Security-Token", sessionToken),
+            Header("X-Amz-Target", "DynamoDB_20120810.PutItem"),
+        )
         
         val signedHeaders = generateRequestHeaders(
             accessKeyId,
@@ -86,15 +95,20 @@ object CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Cre
     // TODO extract to separate function - BroadcastMessageFunction (and BroadcastMessageRequest/Response)
     fun broadcastMessage(message: Message, recipients: List<Connection>) {
         recipients.forEach { recipient ->
+            val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
+            val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
+            val sessionToken = System.getenv("AWS_SESSION_TOKEN")
+            
             val id = recipient.id.replace("=", "%3D")
-            val accessKeyId = System.getenv("ACCESS_KEY")
-            val secretKey = System.getenv("SECRET_KEY")
             val region = "us-west-2"
             val service = "execute-api"
             val method = "POST"
             val url = "https://2od2rn13th.execute-api.us-west-2.amazonaws.com/default/%40connections/$id"
+            
             val body = configuration.encodeToString(Message.serializer(), message)
-            val headers = emptyList<Header>()
+            
+            val headers = listOf(Header("X-Amz-Security-Token", sessionToken))
+            
             val signedHeaders = generateRequestHeaders(
                 accessKeyId,
                 secretKey,

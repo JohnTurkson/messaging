@@ -18,5 +18,5 @@ interface AbstractLambdaFunction<T, R> : RequestStreamHandler {
         output.bufferedWriter().use { writer -> writer.write(response) }
     }
     
-    fun processInput(input: String): String 
+    fun processInput(input: String): String
 }
