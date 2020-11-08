@@ -1,14 +1,17 @@
 package com.johnturkson.messaging.server.functions
 
-import com.johnturkson.awstools.dynamodb.request.PutItemRequest
+import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
+import com.johnturkson.awstools.dynamodb.request.QueryRequest
+import com.johnturkson.awstools.dynamodb.request.QueryResponse
 import com.johnturkson.awstools.signer.AWSRequestSigner
 import com.johnturkson.awstools.signer.AWSRequestSigner.Header
-import com.johnturkson.messaging.server.data.Connection
+import com.johnturkson.messaging.server.data.Message
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
-import com.johnturkson.messaging.server.requests.CreateConnectionRequest
-import com.johnturkson.messaging.server.responses.CreateConnectionResponse
+import com.johnturkson.messaging.server.requests.GetLatestMessagesRequest
+import com.johnturkson.messaging.server.responses.GetLatestMessagesResponse
 import com.johnturkson.messaging.server.responses.Response
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -16,22 +19,22 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
-class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest, CreateConnectionResponse> {
+class GetLatestMessagesFunction : WebsocketLambdaFunction<GetLatestMessagesRequest, GetLatestMessagesResponse> {
     override val configuration = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
     }
-    override val inputSerializer = CreateConnectionRequest.serializer()
+    override val inputSerializer = GetLatestMessagesRequest.serializer()
     override val outputSerializer = Response.serializer()
     
     override fun processRequest(
-        request: CreateConnectionRequest,
+        request: GetLatestMessagesRequest,
         context: WebsocketRequestContext,
-    ): CreateConnectionResponse {
-        return CreateConnectionResponse(createConnection(Connection(context.connectionId, request.data.user)))
+    ): GetLatestMessagesResponse {
+        return GetLatestMessagesResponse(request.conversation, getLatestMessages(request.conversation))
     }
     
-    fun createConnection(connection: Connection): Connection {
+    fun getLatestMessages(conversation: String, limit: Int = 100): List<Message> {
         val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
         val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
         val sessionToken = System.getenv("AWS_SESSION_TOKEN")
@@ -41,13 +44,22 @@ class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest
         val method = "POST"
         val url = "https://dynamodb.us-west-2.amazonaws.com"
         
-        val table = "connections"
-        val request = PutItemRequest(table, connection)
-        val body = configuration.encodeToString(PutItemRequest.serializer(Connection.serializer()), request)
+        val table = "messages"
+        val request = QueryRequest<String>(
+            tableName = table,
+            indexName = "conversation",
+            keyConditionExpression = "#conversation = :conversation",
+            expressionAttributeNames = mapOf("#conversation" to "conversation"),
+            expressionAttributeValues = buildDynamoDBObject {
+                put(":conversation", conversation)
+            },
+            limit = limit
+        )
+        val body = configuration.encodeToString(QueryRequest.serializer(String.serializer()), request)
         
         val headers = listOf(
             Header("X-Amz-Security-Token", sessionToken),
-            Header("X-Amz-Target", "DynamoDB_20120810.PutItem"),
+            Header("X-Amz-Target", "DynamoDB_20120810.Query"),
         )
         
         val signedHeaders = AWSRequestSigner.generateRequestHeaders(
@@ -70,8 +82,11 @@ class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest
         // TODO make singleton client
         val client = OkHttpClient()
         
-        client.newCall(call).execute().close()
+        val response = client.newCall(call).execute().use { response ->
+            val responseBody = response.body?.string() ?: throw Exception("Missing Query response body")
+            configuration.decodeFromString(QueryResponse.serializer(Message.serializer()), responseBody)
+        }
         
-        return connection
+        return response.items
     }
 }

@@ -30,14 +30,10 @@ class GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, Ge
         request: GetConnectionsRequest,
         context: WebsocketRequestContext,
     ): GetConnectionsResponse {
-        return getConnections()
+        return GetConnectionsResponse(getConnections())
     }
     
-    fun getConnections(): GetConnectionsResponse {
-        val table = "connections"
-        
-        val request = ScanRequest<String>(table)
-        
+    fun getConnections(): List<Connection> {
         val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
         val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
         val sessionToken = System.getenv("AWS_SESSION_TOKEN")
@@ -47,6 +43,8 @@ class GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, Ge
         val method = "POST"
         val url = "https://dynamodb.us-west-2.amazonaws.com"
         
+        val table = "connections"
+        val request = ScanRequest<String>(table)
         val body = configuration.encodeToString(ScanRequest.serializer(String.serializer()), request)
         
         val headers = listOf(
@@ -79,6 +77,6 @@ class GetConnectionsFunction : WebsocketLambdaFunction<GetConnectionsRequest, Ge
             configuration.decodeFromString(ScanResponse.serializer(Connection.serializer()), responseBody)
         }
         
-        return GetConnectionsResponse(response.items)
+        return response.items
     }
 }

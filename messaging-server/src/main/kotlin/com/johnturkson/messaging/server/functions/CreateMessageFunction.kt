@@ -32,10 +32,12 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
         request: CreateMessageRequest,
         context: WebsocketRequestContext,
     ): CreateMessageResponse {
-        val response = createMessage(request.data)
+        val message = createMessage(request.data)
+        // TODO get all members of message conversation
         val recipients = GetConnectionsFunction().getConnections()
-        broadcastMessage(response.data, recipients.data)
-        return response
+        // TODO broadcast message to conversation participants
+        // broadcastMessage(message, recipients)
+        return CreateMessageResponse(message)
     }
     
     fun generateMessageId(length: Int = 16): String {
@@ -44,13 +46,11 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
         return id
     }
     
-    fun createMessage(data: MessageData): CreateMessageResponse {
-        val table = "messages"
-        
-        val id = generateMessageId()
-        val message = Message(id, data.contents)
-        val request = PutItemRequest(table, message)
-        
+    fun generateMessageTime(): Long {
+        return System.currentTimeMillis()
+    }
+    
+    fun createMessage(data: MessageData): Message {
         val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
         val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
         val sessionToken = System.getenv("AWS_SESSION_TOKEN")
@@ -60,6 +60,12 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
         val method = "POST"
         val url = "https://dynamodb.us-west-2.amazonaws.com"
         
+        val id = generateMessageId()
+        val time = generateMessageTime()
+        val message = Message(id, time, data.conversation, data.contents)
+        
+        val table = "messages"
+        val request = PutItemRequest(table, message)
         val body = configuration.encodeToString(PutItemRequest.serializer(Message.serializer()), request)
         
         val headers = listOf(
@@ -89,7 +95,7 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
         
         client.newCall(call).execute().close()
         
-        return CreateMessageResponse(message)
+        return message
     }
     
     // TODO extract to separate function - BroadcastMessageFunction (and BroadcastMessageRequest/Response)
@@ -105,6 +111,7 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
             val method = "POST"
             val url = "https://2od2rn13th.execute-api.us-west-2.amazonaws.com/default/%40connections/$id"
             
+            // TODO encode type for broadcasted message
             val body = configuration.encodeToString(Message.serializer(), message)
             
             val headers = listOf(Header("X-Amz-Security-Token", sessionToken))

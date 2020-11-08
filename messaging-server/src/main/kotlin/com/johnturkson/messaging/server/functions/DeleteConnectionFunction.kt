@@ -30,16 +30,12 @@ class DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionRequest
         request: DeleteConnectionRequest,
         context: WebsocketRequestContext,
     ): DeleteConnectionResponse {
-        return deleteConnection(Connection(context.connectionId, request.data))
+        // TODO only pass in context.connectionId
+        deleteConnection(Connection(context.connectionId, request.data.user))
+        return DeleteConnectionResponse
     }
     
-    private fun deleteConnection(connection: Connection): DeleteConnectionResponse {
-        val table = "connections"
-        
-        val request = DeleteItemRequest<String>(table, buildDynamoDBObject {
-            put("id", connection.id)
-        })
-        
+    private fun deleteConnection(connection: Connection) {
         val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
         val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
         val sessionToken = System.getenv("AWS_SESSION_TOKEN")
@@ -49,6 +45,10 @@ class DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionRequest
         val method = "POST"
         val url = "https://dynamodb.us-west-2.amazonaws.com"
         
+        val table = "connections"
+        val request = DeleteItemRequest<String>(table, buildDynamoDBObject {
+            put("id", connection.id)
+        })
         val body = configuration.encodeToString(DeleteItemRequest.serializer(String.serializer()), request)
         
         val headers = listOf(
@@ -77,7 +77,5 @@ class DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionRequest
         val client = OkHttpClient()
         
         client.newCall(call).execute().close()
-        
-        return DeleteConnectionResponse
     }
 }
