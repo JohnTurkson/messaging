@@ -13,15 +13,15 @@ dependencies {
     implementation("com.johnturkson.aws-tools:aws-dynamodb-transforming-serializer:0.0.19")
     implementation("com.johnturkson.aws-tools:aws-request-signer:0.0.19")
     
-    // implementation("io.ktor:ktor-server-cio:1.4.1")
-    // implementation("io.ktor:ktor-server-core:1.4.1")
+    // implementation("io.ktor:ktor-server-cio:1.4.2")
+    // implementation("io.ktor:ktor-server-core:1.4.2")
     
-    // implementation("io.ktor:ktor-client:1.4.1")
-    // implementation("io.ktor:ktor-client-core:1.4.1")
-    // implementation("io.ktor:ktor-client-core-jvm:1.4.1")
-    implementation("io.ktor:ktor-client-cio:1.4.1")
-    // implementation("io.ktor:ktor-websockets:1.4.1")
-    implementation("io.ktor:ktor-client-websockets:1.4.1")
+    // implementation("io.ktor:ktor-client:1.4.2")
+    // implementation("io.ktor:ktor-client-core:1.4.2")
+    // implementation("io.ktor:ktor-client-core-jvm:1.4.2")
+    implementation("io.ktor:ktor-client-cio:1.4.2")
+    // implementation("io.ktor:ktor-websockets:1.4.2")
+    implementation("io.ktor:ktor-client-websockets:1.4.2")
 }
 
 tasks.named<Jar>("jar") {
