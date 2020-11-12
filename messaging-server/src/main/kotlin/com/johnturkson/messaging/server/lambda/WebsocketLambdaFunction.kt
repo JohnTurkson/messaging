@@ -20,15 +20,15 @@ interface WebsocketLambdaFunction<T, R : Response> : AbstractLambdaFunction<T, R
     
     private fun decodeInput(input: String): Pair<T, WebsocketRequestContext> {
         val serializer = WebsocketRequest.serializer()
-        val websocketRequest = configuration.decodeFromString(serializer, input)
-        val request = configuration.decodeFromString(inputSerializer, websocketRequest.body)
+        val websocketRequest = this.serializer.decodeFromString(serializer, input)
+        val request = this.serializer.decodeFromString(inputSerializer, websocketRequest.body)
         val context = websocketRequest.requestContext
         return Pair(request, context)
     }
     
     private fun encodeResponse(response: R): String {
         val serializer = WebsocketResponse.serializer()
-        val websocketResponse = WebsocketResponse(configuration.encodeToString(outputSerializer, response))
-        return configuration.encodeToString(serializer, websocketResponse)
+        val websocketResponse = WebsocketResponse(this.serializer.encodeToString(outputSerializer, response))
+        return this.serializer.encodeToString(serializer, websocketResponse)
     }
 }

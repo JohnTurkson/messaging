@@ -1,26 +1,19 @@
 package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.request.PutItemRequest
-import com.johnturkson.awstools.signer.AWSRequestSigner
-import com.johnturkson.awstools.signer.AWSRequestSigner.Header
+import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
+import com.johnturkson.messaging.server.configuration.SerializerConfiguration
 import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
 import com.johnturkson.messaging.server.requests.CreateConnectionRequest
 import com.johnturkson.messaging.server.responses.CreateConnectionResponse
 import com.johnturkson.messaging.server.responses.Response
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import java.net.URL
 
 class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest, CreateConnectionResponse> {
-    override val configuration = Json {
-        ignoreUnknownKeys = true
-        encodeDefaults = true
-    }
+    override val serializer = SerializerConfiguration.instance
     override val inputSerializer = CreateConnectionRequest.serializer()
     override val outputSerializer = Response.serializer()
     
@@ -28,49 +21,16 @@ class CreateConnectionFunction : WebsocketLambdaFunction<CreateConnectionRequest
         request: CreateConnectionRequest,
         context: WebsocketRequestContext,
     ): CreateConnectionResponse {
-        return CreateConnectionResponse(createConnection(Connection(context.connectionId, request.data.user)))
+        return runBlocking {
+            CreateConnectionResponse(createConnection(Connection(context.connectionId, request.data.user)))
+        }
     }
     
-    fun createConnection(connection: Connection): Connection {
-        val accessKeyId = System.getenv("AWS_ACCESS_KEY_ID")
-        val secretKey = System.getenv("AWS_SECRET_ACCESS_KEY")
-        val sessionToken = System.getenv("AWS_SESSION_TOKEN")
-        
-        val region = "us-west-2"
-        val service = "dynamodb"
-        val method = "POST"
-        val url = "https://dynamodb.us-west-2.amazonaws.com"
-        
+    suspend fun createConnection(connection: Connection): Connection {
         val table = "connections"
         val request = PutItemRequest(table, connection)
-        val body = configuration.encodeToString(PutItemRequest.serializer(Connection.serializer()), request)
-        
-        val headers = listOf(
-            Header("X-Amz-Security-Token", sessionToken),
-            Header("X-Amz-Target", "DynamoDB_20120810.PutItem"),
-        )
-        
-        val signedHeaders = AWSRequestSigner.generateRequestHeaders(
-            accessKeyId,
-            secretKey,
-            region,
-            service,
-            method,
-            url,
-            body,
-            headers,
-        )
-        
-        val call = Request.Builder()
-            .url(URL(url))
-            .apply { signedHeaders.forEach { (name, value) -> addHeader(name, value) } }
-            .method(method, body.toRequestBody("application/json".toMediaType()))
-            .build()
-        
-        // TODO make singleton client
-        val client = OkHttpClient()
-        
-        client.newCall(call).execute().close()
+        // TODO make response return created connection and return it
+        val response = DatabaseRequestHandler.instance.putItem(request, Connection.serializer())
         
         return connection
     }

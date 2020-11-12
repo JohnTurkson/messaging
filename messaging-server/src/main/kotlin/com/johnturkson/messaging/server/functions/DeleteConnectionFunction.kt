@@ -2,8 +2,8 @@ package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.request.DeleteItemRequest
-import com.johnturkson.awstools.signer.AWSRequestSigner
-import com.johnturkson.awstools.signer.AWSRequestSigner.Header
+import com.johnturkson.awstools.requestsigner.AWSRequestSigner
+import com.johnturkson.awstools.requestsigner.AWSRequestSigner.Header
 import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
@@ -19,7 +19,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.net.URL
 
 class DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionRequest, DeleteConnectionResponse> {
-    override val configuration = Json {
+    override val serializer = Json {
         ignoreUnknownKeys = true
         encodeDefaults = true
     }
@@ -49,7 +49,7 @@ class DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionRequest
         val request = DeleteItemRequest<String>(table, buildDynamoDBObject {
             put("id", connection.id)
         })
-        val body = configuration.encodeToString(DeleteItemRequest.serializer(String.serializer()), request)
+        val body = serializer.encodeToString(DeleteItemRequest.serializer(String.serializer()), request)
         
         val headers = listOf(
             Header("X-Amz-Security-Token", sessionToken),

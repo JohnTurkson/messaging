@@ -8,7 +8,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 interface AbstractLambdaFunction<T, R> : RequestStreamHandler {
-    val configuration: Json
+    val serializer: Json
     val inputSerializer: KSerializer<T>
     val outputSerializer: KSerializer<R>
     
