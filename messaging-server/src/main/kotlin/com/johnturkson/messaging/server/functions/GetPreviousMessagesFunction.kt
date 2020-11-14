@@ -22,16 +22,16 @@ class GetPreviousMessagesFunction : WebsocketLambdaFunction<GetPreviousMessagesR
         context: WebsocketRequestContext,
     ): GetPreviousMessagesResponse {
         return runBlocking {
-            GetPreviousMessagesResponse(
-                request.conversation,
-                getPreviousMessages(request.conversation, request.lastMessage),
-            )
+            getPreviousMessages(request.conversation, request.lastMessage)
         }
     }
     
-    suspend fun getPreviousMessages(conversation: String, lastMessageId: String, limit: Int = 100): List<Message> {
-        val lastMessage = GetMessageFunction().getMessage(lastMessageId)
-        
+    suspend fun getPreviousMessages(
+        conversation: String,
+        lastMessageId: String,
+        limit: Int = 100,
+    ): GetPreviousMessagesResponse {
+        val lastMessage = GetMessageFunction().getMessage(lastMessageId).message
         val table = "messages"
         val index = "conversation"
         val request = QueryRequest<Message>(
@@ -49,9 +49,7 @@ class GetPreviousMessagesFunction : WebsocketLambdaFunction<GetPreviousMessagesR
             },
             limit = limit
         )
-    
         val response = DatabaseRequestHandler.instance.query(request, Message.serializer())
-        
-        return response.items
+        return GetPreviousMessagesResponse(conversation, response.items)
     }
 }

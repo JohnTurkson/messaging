@@ -21,10 +21,12 @@ class GetConnectionFunction : WebsocketLambdaFunction<GetConnectionRequest, GetC
         request: GetConnectionRequest,
         context: WebsocketRequestContext,
     ): GetConnectionResponse {
-        return runBlocking { GetConnectionResponse(getConnection(request.id)) }
+        return runBlocking {
+            getConnection(request.id)
+        }
     }
     
-    suspend fun getConnection(id: String): Connection {
+    suspend fun getConnection(id: String): GetConnectionResponse {
         val table = "connections"
         val request = GetItemRequest<Connection>(
             tableName = table,
@@ -32,9 +34,7 @@ class GetConnectionFunction : WebsocketLambdaFunction<GetConnectionRequest, GetC
                 put("id", id)
             }
         )
-        
         val response = DatabaseRequestHandler.instance.getItem(request, Connection.serializer())
-        
-        return response.item
+        return GetConnectionResponse(response.item)
     }
 }

@@ -21,10 +21,12 @@ class GetLatestMessagesFunction : WebsocketLambdaFunction<GetLatestMessagesReque
         request: GetLatestMessagesRequest,
         context: WebsocketRequestContext,
     ): GetLatestMessagesResponse {
-        return runBlocking { GetLatestMessagesResponse(request.conversation, getLatestMessages(request.conversation)) }
+        return runBlocking {
+            getLatestMessages(request.conversation)
+        }
     }
     
-    suspend fun getLatestMessages(conversation: String, limit: Int = 100): List<Message> {
+    suspend fun getLatestMessages(conversation: String, limit: Int = 100): GetLatestMessagesResponse {
         val table = "messages"
         val index = "conversation"
         val request = QueryRequest<Message>(
@@ -37,9 +39,7 @@ class GetLatestMessagesFunction : WebsocketLambdaFunction<GetLatestMessagesReque
             },
             limit = limit
         )
-    
         val response = DatabaseRequestHandler.instance.query(request, Message.serializer())
-        
-        return response.items
+        return GetLatestMessagesResponse(conversation, response.items)
     }
 }

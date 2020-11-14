@@ -3,6 +3,7 @@ package com.johnturkson.messaging.server.responses
 import com.johnturkson.messaging.server.data.Connection
 import com.johnturkson.messaging.server.data.Conversation
 import com.johnturkson.messaging.server.data.Message
+import com.johnturkson.messaging.server.data.User
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,42 +11,57 @@ import kotlinx.serialization.Serializable
 sealed class Response
 
 @Serializable
-@SerialName("GetConnectionResponse")
-data class GetConnectionResponse(val connection: Connection) : Response()
-
-@Serializable
-@SerialName("GetConnectionsResponse")
-data class GetConnectionsResponse(val connections: List<Connection>) : Response()
+@SerialName("CreateUserResponse")
+data class CreateUserResponse(val user: User) : Response()
 
 @Serializable
 @SerialName("CreateConnectionResponse")
 data class CreateConnectionResponse(val connection: Connection) : Response()
 
 @Serializable
-@SerialName("DeleteConnectionResponse")
-// TODO return deleted object
-object DeleteConnectionResponse : Response()
+@SerialName("CreateMessageResponse")
+data class CreateMessageResponse(val message: Message) : Response()
+
+@Serializable
+@SerialName("CreateConversationResponse")
+data class CreateConversationResponse(val conversation: Conversation) : Response()
+
+@Serializable
+@SerialName("GetUserResponse")
+data class GetUserResponse(val user: User) : Response()
+
+@Serializable
+@SerialName("GetConnectionResponse")
+data class GetConnectionResponse(val connection: Connection) : Response()
 
 @Serializable
 @SerialName("GetMessageResponse")
 data class GetMessageResponse(val message: Message) : Response()
 
 @Serializable
-@SerialName("GetPreviousMessagesResponse")
-data class GetPreviousMessagesResponse(val conversation: String, val messages: List<Message>) : Response()
-
-@Serializable
 @SerialName("GetLatestMessagesResponse")
 data class GetLatestMessagesResponse(val conversation: String, val messages: List<Message>) : Response()
 
 @Serializable
-@SerialName("CreateMessageResponse")
-data class CreateMessageResponse(val message: Message) : Response()
+@SerialName("GetPreviousMessagesResponse")
+data class GetPreviousMessagesResponse(val conversation: String, val messages: List<Message>) : Response()
 
 @Serializable
 @SerialName("GetConversationResponse")
 data class GetConversationResponse(val conversation: Conversation) : Response()
 
 @Serializable
-@SerialName("CreateConversationResponse")
-data class CreateConversationResponse(val conversation: Conversation) : Response()
+@SerialName("DeleteUserResponse")
+object DeleteUserResponse : Response()
+
+@Serializable
+@SerialName("DeleteConnectionResponse")
+object DeleteConnectionResponse : Response()
+
+@Serializable
+@SerialName("DeleteMessageResponse")
+object DeleteMessageResponse : Response()
+
+@Serializable
+@SerialName("DeleteConversationResponse")
+object DeleteConversationResponse : Response()

@@ -29,12 +29,11 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
         context: WebsocketRequestContext,
     ): CreateMessageResponse {
         return runBlocking {
-            val message = createMessage(request.data)
+            val response = createMessage(generateMessageId(), generateMessageTime(), request.data)
             // TODO get all members of message conversation
-            val recipients = GetConnectionsFunction().getConnections()
             // TODO broadcast message to conversation participants
             // broadcastMessage(message, recipients)
-            CreateMessageResponse(message)
+            response
         }
     }
     
@@ -48,22 +47,18 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
         return System.currentTimeMillis()
     }
     
-    suspend fun createMessage(data: MessageData): Message {
-        val id = generateMessageId()
-        val time = generateMessageTime()
+    suspend fun createMessage(id: String, time: Long, data: MessageData): CreateMessageResponse {
         val message = Message(id, time, data.conversation, data.contents)
-        
         val table = "messages"
-        val request = PutItemRequest(table, message)
-        val body = serializer.encodeToString(PutItemRequest.serializer(Message.serializer()), request)
-        
-        // TODO make response return created message and return it
+        val request = PutItemRequest(
+            tableName = table,
+            item = message
+        )
         val response = DatabaseRequestHandler.instance.putItem(request, Message.serializer())
-        
-        return message
+        return CreateMessageResponse(message)
     }
     
-    // TODO extract to separate function - BroadcastMessageFunction (and BroadcastMessageRequest/Response)
+    // TODO extract to separate function - BroadcastMessageFunction
     suspend fun broadcastMessage(message: Message, recipients: List<Connection>) {
         recipients.forEach { recipient ->
             val id = recipient.id.replace("=", "%3D")

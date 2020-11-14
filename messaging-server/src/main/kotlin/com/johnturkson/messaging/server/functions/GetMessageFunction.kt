@@ -18,10 +18,12 @@ class GetMessageFunction : WebsocketLambdaFunction<GetMessageRequest, GetMessage
     override val outputSerializer = Response.serializer()
     
     override fun processRequest(request: GetMessageRequest, context: WebsocketRequestContext): GetMessageResponse {
-        return runBlocking { GetMessageResponse(getMessage(request.id)) }
+        return runBlocking {
+            getMessage(request.id)
+        }
     }
     
-    suspend fun getMessage(id: String): Message {
+    suspend fun getMessage(id: String): GetMessageResponse {
         val table = "messages"
         val request = GetItemRequest<Message>(
             tableName = table,
@@ -29,9 +31,7 @@ class GetMessageFunction : WebsocketLambdaFunction<GetMessageRequest, GetMessage
                 put("id", id)
             }
         )
-    
         val response = DatabaseRequestHandler.instance.getItem(request, Message.serializer())
-        
-        return response.item
+        return GetMessageResponse(response.item)
     }
 }
