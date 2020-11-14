@@ -1,6 +1,6 @@
 package com.johnturkson.messaging.server.functions
 
-import com.johnturkson.awstools.dynamodb.request.PutItemRequest
+import com.johnturkson.awstools.dynamodb.requestbuilder.requests.PutItemRequest
 import com.johnturkson.awstools.requesthandler.AWSRequestHandler
 import com.johnturkson.awstools.requesthandler.AWSServiceConfiguration
 import com.johnturkson.messaging.server.configuration.ClientConfiguration

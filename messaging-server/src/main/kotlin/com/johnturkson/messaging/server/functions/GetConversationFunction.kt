@@ -1,7 +1,7 @@
 package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
-import com.johnturkson.awstools.dynamodb.request.GetItemRequest
+import com.johnturkson.awstools.dynamodb.requestbuilder.requests.GetItemRequest
 import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
 import com.johnturkson.messaging.server.configuration.SerializerConfiguration
 import com.johnturkson.messaging.server.data.Conversation
