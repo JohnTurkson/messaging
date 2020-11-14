@@ -1,4 +1,4 @@
-package com.johnturkson.messaging.server.data
+package com.johnturkson.messaging.common.data
 
 import kotlinx.serialization.Serializable
 

@@ -1,9 +1,9 @@
-package com.johnturkson.messaging.server.responses
+package com.johnturkson.messaging.common.responses
 
-import com.johnturkson.messaging.server.data.Connection
-import com.johnturkson.messaging.server.data.Conversation
-import com.johnturkson.messaging.server.data.Message
-import com.johnturkson.messaging.server.data.User
+import com.johnturkson.messaging.common.data.Connection
+import com.johnturkson.messaging.common.data.Conversation
+import com.johnturkson.messaging.common.data.Message
+import com.johnturkson.messaging.common.data.User
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

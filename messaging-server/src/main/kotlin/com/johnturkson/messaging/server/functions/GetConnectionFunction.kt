@@ -4,12 +4,12 @@ import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.requestbuilder.requests.GetItemRequest
 import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
 import com.johnturkson.messaging.server.configuration.SerializerConfiguration
-import com.johnturkson.messaging.server.data.Connection
+import com.johnturkson.messaging.common.data.Connection
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
-import com.johnturkson.messaging.server.requests.GetConnectionRequest
-import com.johnturkson.messaging.server.responses.GetConnectionResponse
-import com.johnturkson.messaging.server.responses.Response
+import com.johnturkson.messaging.common.requests.GetConnectionRequest
+import com.johnturkson.messaging.common.responses.GetConnectionResponse
+import com.johnturkson.messaging.common.responses.Response
 import kotlinx.coroutines.runBlocking
 
 class GetConnectionFunction : WebsocketLambdaFunction<GetConnectionRequest, GetConnectionResponse> {

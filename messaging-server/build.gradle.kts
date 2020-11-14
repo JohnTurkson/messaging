@@ -16,6 +16,7 @@ dependencies {
     implementation("com.johnturkson.aws-tools:aws-dynamodb-request-handler:0.0.27")
     implementation("com.johnturkson.aws-tools:aws-request-signer:0.0.27")
     implementation("com.johnturkson.aws-tools:aws-request-handler:0.0.27")
+    implementation(project(":messaging-common"))
 }
 
 tasks.named<Jar>("jar") {

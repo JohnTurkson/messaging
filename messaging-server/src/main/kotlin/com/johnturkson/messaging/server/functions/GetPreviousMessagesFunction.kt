@@ -4,12 +4,12 @@ import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.requestbuilder.requests.QueryRequest
 import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
 import com.johnturkson.messaging.server.configuration.SerializerConfiguration
-import com.johnturkson.messaging.server.data.Message
+import com.johnturkson.messaging.common.data.Message
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
-import com.johnturkson.messaging.server.requests.GetPreviousMessagesRequest
-import com.johnturkson.messaging.server.responses.GetPreviousMessagesResponse
-import com.johnturkson.messaging.server.responses.Response
+import com.johnturkson.messaging.common.requests.GetPreviousMessagesRequest
+import com.johnturkson.messaging.common.responses.GetPreviousMessagesResponse
+import com.johnturkson.messaging.common.responses.Response
 import kotlinx.coroutines.runBlocking
 
 class GetPreviousMessagesFunction : WebsocketLambdaFunction<GetPreviousMessagesRequest, GetPreviousMessagesResponse> {

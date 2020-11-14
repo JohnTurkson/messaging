@@ -1,7 +1,7 @@
 package com.johnturkson.messaging.server.lambda
 
 import com.amazonaws.services.lambda.runtime.Context
-import com.johnturkson.messaging.server.responses.Response
+import com.johnturkson.messaging.common.responses.Response
 import java.io.InputStream
 import java.io.OutputStream
 
