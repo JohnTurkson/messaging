@@ -10,12 +10,12 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:1.4.2")
     implementation("io.ktor:ktor-client-websockets:1.4.2")
     implementation("io.ktor:ktor-client-serialization:1.4.2")
-    implementation("com.johnturkson.aws-tools:aws-dynamodb-object-builder:0.0.27")
-    implementation("com.johnturkson.aws-tools:aws-dynamodb-request-builder:0.0.27")
-    implementation("com.johnturkson.aws-tools:aws-dynamodb-transforming-serializer:0.0.27")
-    implementation("com.johnturkson.aws-tools:aws-dynamodb-request-handler:0.0.27")
-    implementation("com.johnturkson.aws-tools:aws-request-signer:0.0.27")
-    implementation("com.johnturkson.aws-tools:aws-request-handler:0.0.27")
+    implementation("com.johnturkson.aws-tools:aws-dynamodb-object-builder:0.0.30")
+    implementation("com.johnturkson.aws-tools:aws-dynamodb-request-builder:0.0.30")
+    implementation("com.johnturkson.aws-tools:aws-dynamodb-transforming-serializer:0.0.30")
+    implementation("com.johnturkson.aws-tools:aws-dynamodb-request-handler:0.0.30")
+    implementation("com.johnturkson.aws-tools:aws-request-signer:0.0.30")
+    implementation("com.johnturkson.aws-tools:aws-request-handler:0.0.30")
     implementation(project(":messaging-common"))
 }
 

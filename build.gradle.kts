@@ -5,6 +5,6 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        maven("https://maven.pkg.jetbrains.space/johnturkson/p/aws/aws-tools")
+        maven("https://maven.pkg.jetbrains.space/johnturkson/p/packages/maven")
     }
 }
