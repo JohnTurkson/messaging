@@ -1,15 +1,15 @@
 package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.requestbuilder.requests.PutItemRequest
-import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
-import com.johnturkson.messaging.server.configuration.SerializerConfiguration
 import com.johnturkson.messaging.common.data.Conversation
 import com.johnturkson.messaging.common.data.ConversationData
-import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
-import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
 import com.johnturkson.messaging.common.requests.CreateConversationRequest
 import com.johnturkson.messaging.common.responses.CreateConversationResponse
 import com.johnturkson.messaging.common.responses.Response
+import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
+import com.johnturkson.messaging.server.configuration.SerializerConfiguration
+import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
+import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
 import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -42,7 +42,7 @@ class CreateConversationFunction : WebsocketLambdaFunction<CreateConversationReq
         val table = "conversations"
         val request = PutItemRequest(
             tableName = table,
-            item = conversation
+            item = conversation,
         )
         val response = DatabaseRequestHandler.instance.putItem(request, Conversation.serializer())
         return CreateConversationResponse(conversation)

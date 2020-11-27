@@ -4,9 +4,9 @@ import com.johnturkson.awstools.dynamodb.requesthandler.DynamoDBRequestHandler
 
 object DatabaseRequestHandler {
     val instance: DynamoDBRequestHandler = DynamoDBRequestHandler(
-        DatabaseConfiguration.instance,
         CredentialsConfiguration.instance,
         ClientConfiguration.instance,
+        RegionConfiguration.instance,
         SerializerConfiguration.instance,
     )
 }

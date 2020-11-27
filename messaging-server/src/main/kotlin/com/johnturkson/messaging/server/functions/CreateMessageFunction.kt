@@ -1,20 +1,20 @@
 package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.requestbuilder.requests.PutItemRequest
-import com.johnturkson.awstools.requesthandler.AWSRequestHandler
 import com.johnturkson.awstools.requesthandler.AWSServiceConfiguration
+import com.johnturkson.awstools.requesthandler.DefaultAWSRequestHandler
+import com.johnturkson.messaging.common.data.Connection
+import com.johnturkson.messaging.common.data.Message
+import com.johnturkson.messaging.common.data.MessageData
+import com.johnturkson.messaging.common.requests.CreateMessageRequest
+import com.johnturkson.messaging.common.responses.CreateMessageResponse
+import com.johnturkson.messaging.common.responses.Response
 import com.johnturkson.messaging.server.configuration.ClientConfiguration
 import com.johnturkson.messaging.server.configuration.CredentialsConfiguration
 import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
 import com.johnturkson.messaging.server.configuration.SerializerConfiguration
-import com.johnturkson.messaging.common.data.Connection
-import com.johnturkson.messaging.common.data.Message
-import com.johnturkson.messaging.common.data.MessageData
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
-import com.johnturkson.messaging.common.requests.CreateMessageRequest
-import com.johnturkson.messaging.common.responses.CreateMessageResponse
-import com.johnturkson.messaging.common.responses.Response
 import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 import kotlin.random.nextInt
@@ -64,21 +64,17 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
             val id = recipient.id.replace("=", "%3D")
             
             val region = "us-west-2"
+            val path = "https://2od2rn13th.execute-api.us-west-2.amazonaws.com"
             val service = "execute-api"
+            val endpoint = "default/%40connections/$id"
+            val url = "$path/$endpoint"
             val method = "POST"
-            val url = "https://2od2rn13th.execute-api.us-west-2.amazonaws.com/default/%40connections/$id"
             
             // TODO encode type for broadcasted message
+            val handler = DefaultAWSRequestHandler(CredentialsConfiguration.instance, ClientConfiguration.instance)
+            val serviceConfiguration = AWSServiceConfiguration(region, path, service, endpoint, url, method)
             val body = serializer.encodeToString(Message.serializer(), message)
-            
-            val serviceConfiguration = AWSServiceConfiguration(service, region, url, method)
-            val handler = AWSRequestHandler(
-                CredentialsConfiguration.instance,
-                serviceConfiguration,
-                ClientConfiguration.instance,
-            )
-            
-            handler.request(body)
+            handler.request(serviceConfiguration, body)
         }
     }
 }
