@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 sealed class Request {
     @Serializable
     @SerialName("CreateUserRequest")
-    data class CreateUserRequest(val data: UserData) : Request()
+    data class CreateUserRequest(val data: UserData, val password: String) : Request()
     
     @Serializable
     @SerialName("CreateConnectionRequest")
