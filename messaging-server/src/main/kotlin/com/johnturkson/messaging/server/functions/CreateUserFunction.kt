@@ -32,6 +32,7 @@ class CreateUserFunction : WebsocketLambdaFunction<CreateUserRequest, CreateUser
     }
     
     suspend fun createUser(id: String, data: UserData): CreateUserResponse {
+        // TODO handle passwords
         val user = User(id, data.username, data.email)
         val table = "users"
         val request = PutItemRequest(
