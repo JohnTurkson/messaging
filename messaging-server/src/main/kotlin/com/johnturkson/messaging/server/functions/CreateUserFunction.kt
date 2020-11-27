@@ -1,15 +1,15 @@
 package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.requestbuilder.requests.PutItemRequest
-import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
-import com.johnturkson.messaging.server.configuration.SerializerConfiguration
 import com.johnturkson.messaging.common.data.User
 import com.johnturkson.messaging.common.data.UserData
+import com.johnturkson.messaging.common.requests.Request.CreateUserRequest
+import com.johnturkson.messaging.common.responses.Response
+import com.johnturkson.messaging.common.responses.Response.CreateUserResponse
+import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
+import com.johnturkson.messaging.server.configuration.SerializerConfiguration
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
-import com.johnturkson.messaging.common.requests.CreateUserRequest
-import com.johnturkson.messaging.common.responses.CreateUserResponse
-import com.johnturkson.messaging.common.responses.Response
 import kotlinx.coroutines.runBlocking
 import kotlin.random.Random
 import kotlin.random.nextInt

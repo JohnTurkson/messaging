@@ -6,9 +6,9 @@ import com.johnturkson.awstools.requesthandler.DefaultAWSRequestHandler
 import com.johnturkson.messaging.common.data.Connection
 import com.johnturkson.messaging.common.data.Message
 import com.johnturkson.messaging.common.data.MessageData
-import com.johnturkson.messaging.common.requests.CreateMessageRequest
-import com.johnturkson.messaging.common.responses.CreateMessageResponse
+import com.johnturkson.messaging.common.requests.Request.CreateMessageRequest
 import com.johnturkson.messaging.common.responses.Response
+import com.johnturkson.messaging.common.responses.Response.CreateMessageResponse
 import com.johnturkson.messaging.server.configuration.ClientConfiguration
 import com.johnturkson.messaging.server.configuration.CredentialsConfiguration
 import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler

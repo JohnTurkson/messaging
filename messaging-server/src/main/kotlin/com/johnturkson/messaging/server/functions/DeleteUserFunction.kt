@@ -2,14 +2,14 @@ package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.requestbuilder.requests.DeleteItemRequest
+import com.johnturkson.messaging.common.data.User
+import com.johnturkson.messaging.common.requests.Request.DeleteUserRequest
+import com.johnturkson.messaging.common.responses.Response
+import com.johnturkson.messaging.common.responses.Response.DeleteUserResponse
 import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
 import com.johnturkson.messaging.server.configuration.SerializerConfiguration
-import com.johnturkson.messaging.common.data.User
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
-import com.johnturkson.messaging.common.requests.DeleteUserRequest
-import com.johnturkson.messaging.common.responses.DeleteUserResponse
-import com.johnturkson.messaging.common.responses.Response
 import kotlinx.coroutines.runBlocking
 
 class DeleteUserFunction : WebsocketLambdaFunction<DeleteUserRequest, DeleteUserResponse> {
@@ -23,7 +23,7 @@ class DeleteUserFunction : WebsocketLambdaFunction<DeleteUserRequest, DeleteUser
         }
     }
     
-    suspend fun deleteUser(id: String) : DeleteUserResponse {
+    suspend fun deleteUser(id: String): DeleteUserResponse {
         val table = "users"
         val request = DeleteItemRequest<User>(
             tableName = table,

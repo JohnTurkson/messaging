@@ -3,9 +3,9 @@ package com.johnturkson.messaging.server.functions
 import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.requestbuilder.requests.GetItemRequest
 import com.johnturkson.messaging.common.data.User
-import com.johnturkson.messaging.common.requests.GetUserRequest
-import com.johnturkson.messaging.common.responses.GetUserResponse
+import com.johnturkson.messaging.common.requests.Request.GetUserRequest
 import com.johnturkson.messaging.common.responses.Response
+import com.johnturkson.messaging.common.responses.Response.GetUserResponse
 import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
 import com.johnturkson.messaging.server.configuration.SerializerConfiguration
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction

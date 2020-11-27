@@ -2,14 +2,14 @@ package com.johnturkson.messaging.server.functions
 
 import com.johnturkson.awstools.dynamodb.objectbuilder.buildDynamoDBObject
 import com.johnturkson.awstools.dynamodb.requestbuilder.requests.DeleteItemRequest
+import com.johnturkson.messaging.common.data.Message
+import com.johnturkson.messaging.common.requests.Request.DeleteMessageRequest
+import com.johnturkson.messaging.common.responses.Response
+import com.johnturkson.messaging.common.responses.Response.DeleteMessageResponse
 import com.johnturkson.messaging.server.configuration.DatabaseRequestHandler
 import com.johnturkson.messaging.server.configuration.SerializerConfiguration
-import com.johnturkson.messaging.common.data.Message
 import com.johnturkson.messaging.server.lambda.WebsocketLambdaFunction
 import com.johnturkson.messaging.server.lambda.WebsocketRequestContext
-import com.johnturkson.messaging.common.requests.DeleteMessageRequest
-import com.johnturkson.messaging.common.responses.DeleteMessageResponse
-import com.johnturkson.messaging.common.responses.Response
 import kotlinx.coroutines.runBlocking
 
 class DeleteMessageFunction : WebsocketLambdaFunction<DeleteMessageRequest, DeleteMessageResponse> {
