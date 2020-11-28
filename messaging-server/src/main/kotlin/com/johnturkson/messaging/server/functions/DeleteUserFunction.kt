@@ -25,7 +25,7 @@ class DeleteUserFunction : WebsocketLambdaFunction<DeleteUserRequest, DeleteUser
     
     suspend fun deleteUser(id: String): DeleteUserResponse {
         val table = "users"
-        val request = DeleteItemRequest<User>(
+        val request = DeleteItemRequest(
             tableName = table,
             key = buildDynamoDBObject {
                 put("id", id)

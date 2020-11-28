@@ -25,7 +25,7 @@ class GetMessageFunction : WebsocketLambdaFunction<GetMessageRequest, GetMessage
     
     suspend fun getMessage(id: String): GetMessageResponse {
         val table = "messages"
-        val request = GetItemRequest<Message>(
+        val request = GetItemRequest(
             tableName = table,
             key = buildDynamoDBObject {
                 put("id", id)

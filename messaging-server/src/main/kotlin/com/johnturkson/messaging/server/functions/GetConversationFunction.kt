@@ -28,7 +28,7 @@ class GetConversationFunction : WebsocketLambdaFunction<GetConversationRequest, 
     
     suspend fun getConversation(id: String): GetConversationResponse {
         val table = "conversations"
-        val request = GetItemRequest<Conversation>(
+        val request = GetItemRequest(
             tableName = table,
             key = buildDynamoDBObject {
                 put("id", id)

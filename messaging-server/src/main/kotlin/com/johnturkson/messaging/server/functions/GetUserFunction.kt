@@ -19,13 +19,13 @@ class GetUserFunction : WebsocketLambdaFunction<GetUserRequest, GetUserResponse>
     
     override fun processRequest(request: GetUserRequest, context: WebsocketRequestContext): GetUserResponse {
         return runBlocking {
-            getMessage(request.id)
+            getUser(request.id)
         }
     }
     
-    suspend fun getMessage(id: String): GetUserResponse {
-        val table = "messages"
-        val request = GetItemRequest<User>(
+    suspend fun getUser(id: String): GetUserResponse {
+        val table = "users"
+        val request = GetItemRequest(
             tableName = table,
             key = buildDynamoDBObject {
                 put("id", id)

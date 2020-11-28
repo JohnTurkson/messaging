@@ -5,7 +5,7 @@ import com.johnturkson.messaging.common.responses.Response
 import java.io.InputStream
 import java.io.OutputStream
 
-interface WebsocketLambdaFunction<T, R : Response> : AbstractLambdaFunction<T, Response> {
+interface WebsocketLambdaFunction<T, R : Response> : LambdaFunction<T, Response> {
     override fun handleRequest(input: InputStream, output: OutputStream, context: Context) {
         LambdaFunctionRequestHandler.handleRequest(input, output, context) { request -> processInput(request) }
     }

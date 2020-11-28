@@ -34,20 +34,24 @@ sealed class Response {
     data class GetConnectionResponse(val connection: Connection) : Response()
     
     @Serializable
+    @SerialName("GetConversationResponse")
+    data class GetConversationResponse(val conversation: Conversation) : Response()
+    
+    @Serializable
+    @SerialName("GetLatestConversationsResponse")
+    data class GetLatestConversationsResponse(val user: String, val conversations: List<Conversation>) : Response()
+    
+    @Serializable
+    @SerialName("GetConversationUsersResponse")
+    data class GetConversationUsersResponse(val conversation: String, val users: List<User>): Response()
+    
+    @Serializable
     @SerialName("GetMessageResponse")
     data class GetMessageResponse(val message: Message) : Response()
     
     @Serializable
     @SerialName("GetLatestMessagesResponse")
     data class GetLatestMessagesResponse(val conversation: String, val messages: List<Message>) : Response()
-    
-    @Serializable
-    @SerialName("GetPreviousMessagesResponse")
-    data class GetPreviousMessagesResponse(val conversation: String, val messages: List<Message>) : Response()
-    
-    @Serializable
-    @SerialName("GetConversationResponse")
-    data class GetConversationResponse(val conversation: Conversation) : Response()
     
     @Serializable
     @SerialName("DeleteUserResponse")

@@ -34,20 +34,24 @@ sealed class Request {
     data class GetConnectionRequest(val id: String) : Request()
     
     @Serializable
-    @SerialName("GetMessageRequest")
-    data class GetMessageRequest(val id: String) : Request()
-    
-    @Serializable
     @SerialName("GetConversationRequest")
     data class GetConversationRequest(val id: String) : Request()
     
     @Serializable
-    @SerialName("GetPreviousMessagesRequest")
-    data class GetPreviousMessagesRequest(val conversation: String, val lastMessage: String) : Request()
+    @SerialName("GetLatestConversationsRequest")
+    data class GetLatestConversationsRequest(val user: String, val last: String? = null) : Request()
+    
+    @Serializable
+    @SerialName("GetConversationUsersRequest")
+    data class GetConversationUsersRequest(val conversation: String, val last: String? = null): Request()
+    
+    @Serializable
+    @SerialName("GetMessageRequest")
+    data class GetMessageRequest(val id: String) : Request()
     
     @Serializable
     @SerialName("GetLatestMessagesRequest")
-    data class GetLatestMessagesRequest(val conversation: String) : Request()
+    data class GetLatestMessagesRequest(val conversation: String, val last: String? = null) : Request()
     
     @Serializable
     @SerialName("DeleteUserRequest")
@@ -64,5 +68,4 @@ sealed class Request {
     @Serializable
     @SerialName("DeleteConversationRequest")
     data class DeleteConversationRequest(val id: String) : Request()
-    
 }

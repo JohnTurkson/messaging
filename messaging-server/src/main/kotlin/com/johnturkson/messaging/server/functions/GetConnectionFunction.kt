@@ -28,7 +28,7 @@ class GetConnectionFunction : WebsocketLambdaFunction<GetConnectionRequest, GetC
     
     suspend fun getConnection(id: String): GetConnectionResponse {
         val table = "connections"
-        val request = GetItemRequest<Connection>(
+        val request = GetItemRequest(
             tableName = table,
             key = buildDynamoDBObject {
                 put("id", id)

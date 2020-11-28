@@ -29,7 +29,9 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
         context: WebsocketRequestContext,
     ): CreateMessageResponse {
         return runBlocking {
-            val response = createMessage(generateMessageId(), generateMessageTime(), request.data)
+            val id = generateMessageId()
+            val time = generateMessageTime()
+            val response = createMessage(id, request.data, time)
             // TODO get all members of message conversation
             // TODO broadcast message to conversation participants
             // broadcastMessage(message, recipients)
@@ -47,11 +49,10 @@ class CreateMessageFunction : WebsocketLambdaFunction<CreateMessageRequest, Crea
         return System.currentTimeMillis()
     }
     
-    suspend fun createMessage(id: String, time: Long, data: MessageData): CreateMessageResponse {
-        val message = Message(id, time, data.conversation, data.contents)
-        val table = "messages"
+    suspend fun createMessage(id: String, data: MessageData, time: Long): CreateMessageResponse {
+        val message = Message(id, data.sender, data.conversation, data.contents, time, time)
         val request = PutItemRequest(
-            tableName = table,
+            tableName = "Messages",
             item = message
         )
         val response = DatabaseRequestHandler.instance.putItem(request, Message.serializer())

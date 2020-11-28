@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
 
-interface AbstractLambdaFunction<T, R> : RequestStreamHandler {
+interface LambdaFunction<T, R> : RequestStreamHandler {
     val serializer: Json
     val inputSerializer: KSerializer<T>
     val outputSerializer: KSerializer<R>

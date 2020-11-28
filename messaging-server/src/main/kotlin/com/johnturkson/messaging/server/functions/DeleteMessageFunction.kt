@@ -28,7 +28,7 @@ class DeleteMessageFunction : WebsocketLambdaFunction<DeleteMessageRequest, Dele
     
     suspend fun deleteMessage(id: String): DeleteMessageResponse {
         val table = "messages"
-        val request = DeleteItemRequest<Message>(
+        val request = DeleteItemRequest(
             tableName = table,
             key = buildDynamoDBObject {
                 put("id", id)

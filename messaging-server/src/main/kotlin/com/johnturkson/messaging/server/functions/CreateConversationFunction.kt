@@ -24,7 +24,10 @@ class CreateConversationFunction : WebsocketLambdaFunction<CreateConversationReq
         context: WebsocketRequestContext,
     ): CreateConversationResponse {
         return runBlocking {
-            createConversation(generateConversationId(), request.data)
+            val id = generateConversationId()
+            // val user = TODO()
+            val time = generateConversationTime()
+            createConversation(generateConversationId(), request.data, time, time)
         }
     }
     
@@ -34,17 +37,22 @@ class CreateConversationFunction : WebsocketLambdaFunction<CreateConversationReq
         return id
     }
     
-    suspend fun createConversation(id: String, data: ConversationData): CreateConversationResponse {
+    fun generateConversationTime(): Long {
+        return System.currentTimeMillis()
+    }
+    
+    suspend fun createConversation(id: String, data: ConversationData, created: Long, modified: Long): CreateConversationResponse {
         // TODO check current user is contained in members
         // TODO check all members exist
         // TODO check user has permission to add member to conversation
-        val conversation = Conversation(id, data.members)
-        val table = "conversations"
+        val conversation = Conversation(id, data.name, created, modified)
         val request = PutItemRequest(
-            tableName = table,
+            tableName = "Conversations",
             item = conversation,
         )
-        val response = DatabaseRequestHandler.instance.putItem(request, Conversation.serializer())
+        // TODO add user to conversation
+        // TODO add conversation to user
+        DatabaseRequestHandler.instance.putItem(request, Conversation.serializer())
         return CreateConversationResponse(conversation)
     }
 }

@@ -28,7 +28,7 @@ class DeleteConnectionFunction : WebsocketLambdaFunction<DeleteConnectionRequest
     
     suspend fun deleteConnection(id: String): DeleteConnectionResponse {
         val table = "connections"
-        val request = DeleteItemRequest<Connection>(
+        val request = DeleteItemRequest(
             tableName = table,
             key = buildDynamoDBObject {
                 put("id", id)
